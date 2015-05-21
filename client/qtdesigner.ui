@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>448</width>
+    <width>402</width>
     <height>260</height>
    </rect>
   </property>
@@ -46,11 +46,30 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>448</width>
+     <width>402</width>
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="mplactionOpen"/>
+    <addaction name="separator"/>
+    <addaction name="mplactionQuit"/>
+   </widget>
+   <addaction name="menu_File"/>
   </widget>
+  <action name="mplactionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="mplactionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
