@@ -74,4 +74,4 @@ class Ui_MplMainWindow(object):
         self.mplactionOpen.setText(_translate("MplMainWindow", "Open", None))
         self.mplactionQuit.setText(_translate("MplMainWindow", "Quit", None))
 
-from mplwidget import MplWidget
+from .mplwidget import MplWidget
