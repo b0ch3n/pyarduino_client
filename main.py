@@ -21,7 +21,7 @@ class DesignerMainWindow(QtGui.QMainWindow, Ui_MplMainWindow):
     def __init__(self, parent=None):
         super(DesignerMainWindow, self).__init__(parent)
         self.setupUi(self)
-
+    
         QtCore.QObject.connect(self.mplpushButton, QtCore.SIGNAL("clicked()"), self.update_graph)
         QtCore.QObject.connect(self.mplactionOpen, QtCore.SIGNAL('triggered()'), self.select_file)
         QtCore.QObject.connect(self.mplactionQuit, QtCore.SIGNAL('triggered()'), QtGui.qApp, QtCore.SLOT("quit()"))
