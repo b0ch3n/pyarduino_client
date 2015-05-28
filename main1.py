@@ -23,15 +23,18 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         self._connectionParameters = {}
-
+        self.connectionStatusTextBox.setReadOnly(True)
         self.setValidatorsForInputs()
         QtCore.QObject.connect(self.connectButton, QtCore.SIGNAL("clicked()"), self.connect_to_server)
 
     def connect_to_server(self):
         """try to get data from inputs and connect to arduino server"""
-        self._connectionParameters['address'] = self.serverAddressTextLine.text()
-        self._connectionParameters['port'] = int(self.serverPortTextLine.text().strip().replace(" ", ""))
-        self._connectionParameters['socket_type'] = self.serverSocketTypeCBox.currentText()
+        try:
+            self._connectionParameters['address'] = self.serverAddressTextLine.text()
+            self._connectionParameters['port'] = int(self.serverPortTextLine.text().strip().replace(" ", ""))
+            self._connectionParameters['socket_type'] = self.serverSocketTypeCBox.currentText()
+        except:
+            self.connectionStatusTextBox.append("Wprowadz prawidlowe dane do połączenia! \n")
 
         self.sockettype = "Undefined"
         if self._connectionParameters['socket_type'] == 'AF_INET':
@@ -40,15 +43,24 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.sockettype= None
         else:
            self.sockettype= AF_INET6
-
+        self.connectionStatusTextBox.append("Próba utworzenia gniazda...\n")
         s = socket(AF_INET, SOCK_STREAM) #utworzenie gniazda
+        self.connectionStatusTextBox.append("Gniazdo utworzone pomyślnie.\n")
+        self.connectionStatusTextBox.append("Prób połączenia z serwerem...\n")
         s.connect((self._connectionParameters['address'], 8888)) # nawiazanie polaczenia
+        self.connectionStatusTextBox.append("Połączenie nawiązane pomyślnie.\n")
 
-        tm = s.recv(1024) #odbior danych (max 1024 bajtów)
-        s.close()
-        print(tm)
-
-        print(self._connectionParameters)
+        self.connectionStatusTextBox.append("MONITORING ROZPOCZĘTY...\n")
+        '''
+        self.i = 0;
+        while self.i<8:
+            s = socket(AF_INET, SOCK_STREAM) #utworzenie gniazda
+            s.connect((self._connectionParameters['address'], 8888)) # nawiazanie polaczenia
+            tm = s.recv(1024) #odbior danych (max 1024 bajtów)
+            print(tm)
+            self.i += 1
+            s.close()
+        '''
 
     def setValidatorsForInputs(self):
         validator = QtGui.QIntValidator()
