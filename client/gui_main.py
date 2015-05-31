@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'gui_main.ui'
 #
-# Created: Wed May 27 01:07:52 2015
+# Created: Sun May 31 15:55:33 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -118,9 +118,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.label_4)
         self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.tab_main.addTab(self.tab_settings, _fromUtf8(""))
-        self.tab_graph = QtGui.QWidget()
-        self.tab_graph.setObjectName(_fromUtf8("tab_graph"))
-        self.tab_main.addTab(self.tab_graph, _fromUtf8(""))
+        self.tab_plot = QtGui.QWidget()
+        self.tab_plot.setObjectName(_fromUtf8("tab_plot"))
+        self.verticalLayout_4 = QtGui.QVBoxLayout(self.tab_plot)
+        self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
+        self.mplplotwidget = MplPlotWidget(self.tab_plot)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.mplplotwidget.sizePolicy().hasHeightForWidth())
+        self.mplplotwidget.setSizePolicy(sizePolicy)
+        self.mplplotwidget.setObjectName(_fromUtf8("mplplotwidget"))
+        self.verticalLayout_4.addWidget(self.mplplotwidget)
+        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(_fromUtf8("horizontalLayout_2"))
+        self.startMonitButton = QtGui.QPushButton(self.tab_plot)
+        self.startMonitButton.setObjectName(_fromUtf8("startMonitButton"))
+        self.horizontalLayout_2.addWidget(self.startMonitButton)
+        self.verticalLayout_4.addLayout(self.horizontalLayout_2)
+        self.tab_main.addTab(self.tab_plot, _fromUtf8(""))
         self.gridLayout_2.addWidget(self.tab_main, 0, 0, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout_2)
         MainWindow.setCentralWidget(self.centralwidget)
@@ -152,10 +168,12 @@ class Ui_MainWindow(object):
         self.serverSocketTypeCBox.setItemText(2, _translate("MainWindow", "AF_INET6 ", None))
         self.label_3.setText(_translate("MainWindow", "Typ gniazda:", None))
         self.label.setText(_translate("MainWindow", "Adres serwera:", None))
-        self.connectButton.setText(_translate("MainWindow", "POŁĄCZ", None))
+        self.connectButton.setText(_translate("MainWindow", "TEST POŁĄCZENIA", None))
         self.tab_main.setTabText(self.tab_main.indexOf(self.tab_settings), _translate("MainWindow", "Ustawienia", None))
-        self.tab_main.setTabText(self.tab_main.indexOf(self.tab_graph), _translate("MainWindow", "Wykres", None))
+        self.startMonitButton.setText(_translate("MainWindow", "ROZPOCZNIJ MONITORING", None))
+        self.tab_main.setTabText(self.tab_main.indexOf(self.tab_plot), _translate("MainWindow", "Wykres", None))
         self.menuFile.setTitle(_translate("MainWindow", "File", None))
         self.actionAbout.setText(_translate("MainWindow", "About...", None))
         self.actionExit.setText(_translate("MainWindow", "Exit", None))
 
+from .mplplotwidget import MplPlotWidget

@@ -35,7 +35,7 @@
          <bool>false</bool>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tab_settings">
          <attribute name="title">
@@ -130,7 +130,7 @@
             <item row="3" column="2">
              <widget class="QPushButton" name="connectButton">
               <property name="text">
-               <string>POŁĄCZ</string>
+               <string>TEST POŁĄCZENIA</string>
               </property>
              </widget>
             </item>
@@ -169,10 +169,33 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_graph">
+        <widget class="QWidget" name="tab_plot">
          <attribute name="title">
           <string>Wykres</string>
          </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="MplPlotWidget" name="mplplotwidget" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QPushButton" name="startMonitButton">
+              <property name="text">
+               <string>ROZPOCZNIJ MONITORING</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </widget>
       </item>
@@ -209,6 +232,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MplPlotWidget</class>
+   <extends>QWidget</extends>
+   <header>mplplotwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
