@@ -2,6 +2,7 @@ import socket
 import struct
 import threading
 import queue
+import time
 
 
 class ClientCommand(object):
@@ -83,23 +84,18 @@ class SocketClientThread(threading.Thread):
         self.reply_q.put(reply)
 
     def _handle_SEND(self, cmd):
-        header = struct.pack('<L', len(cmd.data))
         try:
-            self.socket.sendall(header + cmd.data)
+            self.socket.sendall(cmd.data.encode())
             self.reply_q.put(self._success_reply())
         except IOError as e:
             self.reply_q.put(self._error_reply(str(e)))
 
     def _handle_RECEIVE(self, cmd):
         try:
-            header_data = self._recv_n_bytes(4)
-            if len(header_data) == 4:
-                msg_len = struct.unpack('<L', header_data)[0]
-                data = self._recv_n_bytes(msg_len)
-                if len(data) == msg_len:
-                    self.reply_q.put(self._success_reply(data))
-                    return
-            self.reply_q.put(self._error_reply('Socket closed prematurely'))
+            data = None
+            data = self._recv_n_bytes(4)
+            self.reply_q.put(self._success_reply(data))
+            return
         except IOError as e:
             self.reply_q.put(self._error_reply(str(e)))
 
@@ -107,12 +103,8 @@ class SocketClientThread(threading.Thread):
         """ Convenience method for receiving exactly n bytes from
             self.socket (assuming it's open and connected).
         """
-        data = ''
-        while len(data) < n:
-            chunk = self.socket.recv(n - len(data))
-            if chunk == '':
-                break
-            data += chunk
+        data = None
+        data = self.socket.recv(n).decode('utf-8')
         return data
 
     def _error_reply(self, errstr):
