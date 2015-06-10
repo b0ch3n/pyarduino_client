@@ -32,6 +32,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
     def connect_to_server(self):
         """try to get data from inputs and connect to arduino server"""
+        self.connectionStatusTextBox.clear()
         try:
             self._connectionParameters['address'] = self.serverAddressTextLine.text()
             self._connectionParameters['port'] = int(self.serverPortTextLine.text().strip().replace(" ", ""))
@@ -51,7 +52,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             s = socket(AF_INET, SOCK_STREAM)
             self.connectionStatusTextBox.append("Gniazdo utworzone pomyślnie.\n")
             self.connectionStatusTextBox.append("Próba połączenia z serwerem...\n")
-            s.connect((self._connectionParameters['address'], 8888))
+            s.connect((self._connectionParameters['address'], int(self._connectionParameters['port'])))
             self.connectionStatusTextBox.append("Połączenie nawiązane pomyślnie.\n")
             self.connectionStatusTextBox.append("Zamykanie połączenia...\n")
             s.close()
