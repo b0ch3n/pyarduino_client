@@ -14,11 +14,48 @@ from socket_thread.socket_thread import SocketClientThread
 from socket_thread.socket_thread import ClientCommand
 from socket_thread.socket_thread import ClientReply
 
+import threading
+
+class MyThread(QtCore.QThread):
+    trigger = QtCore.pyqtSignal(int)
+
+    def __init__(self, parent=None):
+        super(MyThread, self).__init__(parent)
+
+    def setup(self, thread_no, connected, sct):
+        self.thread_no = thread_no
+        self._connected = connected
+        self.sct = sct
+
+    def run(self):
+        while True:
+            try:
+
+
+                if self._connected == 0:
+                    self.sct.cmd_q.put(ClientCommand(ClientCommand.CONNECT, ('localhost', 8888)))
+                    reply = self.sct.reply_q.get(True)
+                    self._connected= 1
+
+                self.sct.cmd_q.put(ClientCommand(ClientCommand.SEND, "hellothere"))
+                reply = self.sct.reply_q.get(True)
+                self.sct.cmd_q.put(ClientCommand(ClientCommand.RECEIVE, "hellothere"))
+                reply = self.sct.reply_q.get(True)
+                self.trigger.emit(reply.data)
+                print(reply.data)
+                time.sleep(2)
+
+            except queue.Empty:
+                pass
+
+
+
 class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setupUi(self)
         self._connected = 0
+
         self._connectionParameters = {}
         self.connectionStatusTextBox.setReadOnly(True)
         self.setValidatorsForInputs()
@@ -76,31 +113,32 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.serverPortTextLine.setValidator(validator)
 
     def start_monitoring(self):
+        self.monit()
 
-        try:
-            if self._connected == 0:
-                self.sct.cmd_q.put(ClientCommand(ClientCommand.CONNECT, ('localhost', 8888)))
-                reply = self.sct.reply_q.get(True)
-                self._connected= 1
+        # try:
+        #     if self._connected == 0:
+        #         self.sct.cmd_q.put(ClientCommand(ClientCommand.CONNECT, ('localhost', 8888)))
+        #         reply = self.sct.reply_q.get(True)
+        #         self._connected= 1
+        #
+        #     self.sct.cmd_q.put(ClientCommand(ClientCommand.SEND, "hellothere"))
+        #     reply = self.sct.reply_q.get(True)
+        #     self.sct.cmd_q.put(ClientCommand(ClientCommand.RECEIVE, "hellothere"))
+        #     reply = self.sct.reply_q.get(True)
+        #     print(reply.type, reply.data)
+        #
+        # except queue.Empty:
+        #     pass
 
-            self.sct.cmd_q.put(ClientCommand(ClientCommand.SEND, "hellothere"))
-            reply = self.sct.reply_q.get(True)
-            self.sct.cmd_q.put(ClientCommand(ClientCommand.RECEIVE, "hellothere"))
-            reply = self.sct.reply_q.get(True)
-            print(reply.type, reply.data)
 
-        except queue.Empty:
-            pass
+    def update_text(self, reply):
+        self.connectionStatusTextBox.append(str(reply))
 
     def monit(self):
-        while (True):
-            try:
-                reply = self.sct.reply_q.get(block=False)
-                status = "SUCCESS" if reply.type == ClientReply.SUCCESS else "ERROR"
-                print('Client reply %s: %s' % (status, reply.data))
-                self.sct.cmd_q.put(ClientCommand(ClientCommand.RECEIVE, "hellothere"))
-            except queue.Empty:
-                pass
+        thread = MyThread(self)    # create a thread
+        thread.trigger.connect(self.update_text)  # connect to it's signal
+        thread.setup(1, 0, self.sct)            # just setting up a parameter
+        thread.start()
 
 
 
