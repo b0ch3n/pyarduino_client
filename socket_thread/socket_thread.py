@@ -6,14 +6,7 @@ import time
 
 
 class ClientCommand(object):
-    """ A command to the client thread.
-        Each command type has its associated data:
 
-        CONNECT:    (host, port) tuple
-        SEND:       Data string
-        RECEIVE:    None
-        CLOSE:      None
-    """
     CONNECT, SEND, RECEIVE, CLOSE = range(4)
 
     def __init__(self, type, data=None):
@@ -22,13 +15,7 @@ class ClientCommand(object):
 
 
 class ClientReply(object):
-    """ A reply from the client thread.
-        Each reply type has its associated data:
 
-        ERROR:      The error string
-        SUCCESS:    Depends on the command - for RECEIVE it's the received
-                    data string, for others None.
-    """
     ERROR, SUCCESS = range(2)
 
     def __init__(self, type, data=None):
@@ -37,10 +24,7 @@ class ClientReply(object):
 
 
 class SocketClientThread(threading.Thread):
-    """ Implements the threading.Thread interface (start, join, etc.) and
-        can be controlled via the cmd_q Queue attribute. Replies are
-        placed in the reply_q Queue attribute.
-    """
+
     def __init__(self, cmd_q=None, reply_q=None):
         super(SocketClientThread, self).__init__()
         self.cmd_q = cmd_q or queue.Queue()
@@ -93,16 +77,15 @@ class SocketClientThread(threading.Thread):
     def _handle_RECEIVE(self, cmd):
         try:
             data = None
-            data = self._recv_n_bytes(4)
+            data = self._recv_n_bytes(32)
+            print(data)
             self.reply_q.put(self._success_reply(data))
             return
         except IOError as e:
             self.reply_q.put(self._error_reply(str(e)))
 
     def _recv_n_bytes(self, n):
-        """ Convenience method for receiving exactly n bytes from
-            self.socket (assuming it's open and connected).
-        """
+
         data = None
         data = self.socket.recv(n).decode('utf-8')
         return data
@@ -110,5 +93,5 @@ class SocketClientThread(threading.Thread):
     def _error_reply(self, errstr):
         return ClientReply(ClientReply.ERROR, errstr)
 
-    def _success_reply(self, data=None):
+    def _success_reply(self, data='sending successed'):
         return ClientReply(ClientReply.SUCCESS, data)

@@ -17,7 +17,7 @@ from socket_thread.socket_thread import ClientReply
 import threading
 
 class MyThread(QtCore.QThread):
-    trigger = QtCore.pyqtSignal(int)
+    trigger = QtCore.pyqtSignal(str)
 
     def __init__(self, parent=None):
         super(MyThread, self).__init__(parent)
@@ -37,12 +37,13 @@ class MyThread(QtCore.QThread):
                     reply = self.sct.reply_q.get(True)
                     self._connected= 1
 
-                self.sct.cmd_q.put(ClientCommand(ClientCommand.SEND, "hellothere"))
+                self.sct.cmd_q.put(ClientCommand(ClientCommand.SEND, "ssss"))
                 reply = self.sct.reply_q.get(True)
-                self.sct.cmd_q.put(ClientCommand(ClientCommand.RECEIVE, "hellothere"))
+                print(reply.data)
+                time.sleep(2)
+                self.sct.cmd_q.put(ClientCommand(ClientCommand.RECEIVE, "ssss"))
                 reply = self.sct.reply_q.get(True)
                 self.trigger.emit(reply.data)
-                print(reply.data)
                 time.sleep(2)
 
             except queue.Empty:
@@ -97,16 +98,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         except:
             self.connectionStatusTextBox.append("Nie udało się połączyć z serwerem!\n")
 
-        '''
-        self.i = 0;
-        while self.i<8:
-            s = socket(AF_INET, SOCK_STREAM) #utworzenie gniazda
-            s.connect((self._connectionParameters['address'], 8888)) # nawiazanie polaczenia
-            tm = s.recv(1024) #odbior danych (max 1024 bajtów)
-            print(tm)
-            self.i += 1
-            s.close()
-        '''
+
 
     def setValidatorsForInputs(self):
         validator = QtGui.QIntValidator()
@@ -115,38 +107,21 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def start_monitoring(self):
         self.monit()
 
-        # try:
-        #     if self._connected == 0:
-        #         self.sct.cmd_q.put(ClientCommand(ClientCommand.CONNECT, ('localhost', 8888)))
-        #         reply = self.sct.reply_q.get(True)
-        #         self._connected= 1
-        #
-        #     self.sct.cmd_q.put(ClientCommand(ClientCommand.SEND, "hellothere"))
-        #     reply = self.sct.reply_q.get(True)
-        #     self.sct.cmd_q.put(ClientCommand(ClientCommand.RECEIVE, "hellothere"))
-        #     reply = self.sct.reply_q.get(True)
-        #     print(reply.type, reply.data)
-        #
-        # except queue.Empty:
-        #     pass
-
-
     def update_text(self, reply):
-        self.connectionStatusTextBox.append(str(reply))
+        self.connectionStatusTextBox.append(reply)
 
     def monit(self):
-        thread = MyThread(self)    # create a thread
-        thread.trigger.connect(self.update_text)  # connect to it's signal
-        thread.setup(1, 0, self.sct)            # just setting up a parameter
+        thread = MyThread(self)
+        thread.trigger.connect(self.update_text)
+        thread.setup(1, 0, self.sct)
         thread.start()
 
 
 
 app = QtGui.QApplication(sys.argv)
-# instantiate the main window
+
 dmw = MainWindow()
-# show it
+
 dmw.show()
-# start the Qt main loop execution, exiting from this script
-# with the same return code of Qt application
+
 sys.exit(app.exec_())
