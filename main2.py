@@ -40,11 +40,11 @@ class MyThread(QtCore.QThread):
                 self.sct.cmd_q.put(ClientCommand(ClientCommand.SEND, "ssss"))
                 reply = self.sct.reply_q.get(True)
                 print(reply.data)
-                time.sleep(2)
+                #time.sleep(2)
                 self.sct.cmd_q.put(ClientCommand(ClientCommand.RECEIVE, "ssss"))
                 reply = self.sct.reply_q.get(True)
                 self.trigger.emit(reply.data)
-                time.sleep(2)
+                #time.sleep(2)
 
             except queue.Empty:
                 pass
@@ -69,7 +69,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
 
     def connect_to_server(self):
-        """try to get data from inputs and connect to arduino server"""
         self.connectionStatusTextBox.clear()
         try:
             self._connectionParameters['address'] = self.serverAddressTextLine.text()
@@ -110,18 +109,18 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def update_text(self, reply):
         self.connectionStatusTextBox.append(reply)
 
+    def update_chart(self, reply):
+        self.mplplotwidget.canvas.update_figure(reply)
+
     def monit(self):
         thread = MyThread(self)
-        thread.trigger.connect(self.update_text)
+        thread.trigger.connect(self.update_chart)
         thread.setup(1, 0, self.sct)
         thread.start()
 
 
 
 app = QtGui.QApplication(sys.argv)
-
 dmw = MainWindow()
-
 dmw.show()
-
 sys.exit(app.exec_())

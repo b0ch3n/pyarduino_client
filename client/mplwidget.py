@@ -26,6 +26,8 @@ class MplCanvas(FigureCanvas):
         # notify the system of updated policy
         FigureCanvas.updateGeometry(self)
 
+    def compute_initial_figure(self):
+        pass
 
 class MplWidget(QtGui.QWidget):
     """Widget defined in Qt Designer"""
