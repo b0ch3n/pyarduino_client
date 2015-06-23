@@ -22,29 +22,27 @@ class MyThread(QtCore.QThread):
     def __init__(self, parent=None):
         super(MyThread, self).__init__(parent)
 
-    def setup(self, thread_no, connected, sct):
+    def setup(self, thread_no, connected, sct, params):
         self.thread_no = thread_no
         self._connected = connected
         self.sct = sct
+        self._params = params
 
     def run(self):
         while True:
             try:
-
-
                 if self._connected == 0:
-                    self.sct.cmd_q.put(ClientCommand(ClientCommand.CONNECT, ('localhost', 8888)))
+                    self.sct.cmd_q.put(ClientCommand(ClientCommand.CONNECT, (self._params['address'],
+                                                                             int(self._params['port']))))
                     reply = self.sct.reply_q.get(True)
                     self._connected= 1
 
-                self.sct.cmd_q.put(ClientCommand(ClientCommand.SEND, "ssss"))
+                self.sct.cmd_q.put(ClientCommand(ClientCommand.SEND, ""))
                 reply = self.sct.reply_q.get(True)
                 print(reply.data)
-                #time.sleep(2)
-                self.sct.cmd_q.put(ClientCommand(ClientCommand.RECEIVE, "ssss"))
+                self.sct.cmd_q.put(ClientCommand(ClientCommand.RECEIVE, "Client_Getter"))
                 reply = self.sct.reply_q.get(True)
                 self.trigger.emit(reply.data)
-                #time.sleep(2)
 
             except queue.Empty:
                 pass
@@ -115,7 +113,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def monit(self):
         thread = MyThread(self)
         thread.trigger.connect(self.update_chart)
-        thread.setup(1, 0, self.sct)
+        thread.setup(1, 0, self.sct, self._connectionParameters)
         thread.start()
 
 
