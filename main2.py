@@ -37,7 +37,7 @@ class MyThread(QtCore.QThread):
                     reply = self.sct.reply_q.get(True)
                     self._connected= 1
 
-                self.sct.cmd_q.put(ClientCommand(ClientCommand.SEND, ""))
+                self.sct.cmd_q.put(ClientCommand(ClientCommand.SEND, "aaaaa"))
                 reply = self.sct.reply_q.get(True)
                 print(reply.data)
                 self.sct.cmd_q.put(ClientCommand(ClientCommand.RECEIVE, "Client_Getter"))
